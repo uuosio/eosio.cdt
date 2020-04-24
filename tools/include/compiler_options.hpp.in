@@ -322,6 +322,10 @@ static cl::opt<std::string> contract_name(
     "contract",
     cl::desc("Contract name"),
     cl::cat(EosioCompilerToolCategory));
+static cl::opt<bool> fpic_opt(
+    "fpic",
+    cl::desc("Generate position-independent code"),
+    cl::cat(EosioCompilerToolCategory));
 
 /// end c/c++ options
 
@@ -840,8 +844,13 @@ static Options CreateOptions(bool add_defaults=true) {
    for ( auto resource : resources ) {
       agresources.emplace_back(resource);
    }
-   if (fnative_opt)
+   if (fnative_opt) {
+      if (fpic_opt) {
+         copts.emplace_back("-fPIC");
+         agopts.emplace_back("-fPIC");
+      }
       ldopts.emplace_back("-fnative");
+   }
    if (fuse_main_opt)
       ldopts.emplace_back("-fuse-main");
 #endif
